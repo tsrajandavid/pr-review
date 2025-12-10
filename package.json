@@ -112,8 +112,8 @@
         },
         "prReview.geminiModel": {
           "type": "string",
-          "default": "gemini-1.5-pro",
-          "description": "Google Gemini model to use (e.g., gemini-1.5-pro, gemini-1.5-flash)"
+          "default": "gemini-pro",
+          "description": "Google Gemini model to use (e.g., gemini-pro, gemini-pro-vision)"
         },
         "prReview.maxTokens": {
           "type": "number",

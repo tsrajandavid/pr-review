@@ -1,7 +1,8 @@
 node_modules
-out
 *.vsix
 .vscode-test
 .vscode
-src/**/*.js
-src/**/*.map
+src
+tsconfig.json
+.gitignore
+**/*.map

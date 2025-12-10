@@ -91,7 +91,7 @@ export class ConfigurationManager {
    * Get Gemini model name
    */
   getGeminiModel(): string {
-    return this.config.get<string>('geminiModel', 'gemini-1.5-pro');
+    return this.config.get<string>('geminiModel', 'gemini-pro');
   }
 
   /**
