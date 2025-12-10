@@ -37,6 +37,8 @@ export class ConfigurationManager {
         return process.env.OPENAI_API_KEY || '';
       } else if (provider === 'anthropic') {
         return process.env.ANTHROPIC_API_KEY || '';
+      } else if (provider === 'gemini') {
+        return process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '';
       }
     }
     
@@ -83,6 +85,13 @@ export class ConfigurationManager {
    */
   getAnthropicModel(): string {
     return this.config.get<string>('anthropicModel', 'claude-3-opus-20240229');
+  }
+
+  /**
+   * Get Gemini model name
+   */
+  getGeminiModel(): string {
+    return this.config.get<string>('geminiModel', 'gemini-1.5-pro');
   }
 
   /**

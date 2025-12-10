@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { ConfigurationManager } from '../config/settings';
 
 export interface ReviewIssue {
@@ -24,6 +25,7 @@ export class AIService {
   private config: ConfigurationManager;
   private openaiClient?: OpenAI;
   private anthropicClient?: Anthropic;
+  private geminiClient?: GoogleGenerativeAI;
 
   constructor(config: ConfigurationManager) {
     this.config = config;
@@ -47,6 +49,8 @@ export class AIService {
       this.anthropicClient = new Anthropic({ 
         apiKey: apiKey 
       });
+    } else if (provider === 'gemini') {
+      this.geminiClient = new GoogleGenerativeAI(apiKey);
     }
   }
 
@@ -63,6 +67,8 @@ export class AIService {
         response = await this.reviewWithOpenAI(prompt);
       } else if (provider === 'anthropic') {
         response = await this.reviewWithAnthropic(prompt);
+      } else if (provider === 'gemini') {
+        response = await this.reviewWithGemini(prompt);
       } else {
         throw new Error(`Unsupported AI provider: ${provider}`);
       }
@@ -85,6 +91,8 @@ export class AIService {
         return await this.generateWithOpenAI(prompt);
       } else if (provider === 'anthropic') {
         return await this.generateWithAnthropic(prompt);
+      } else if (provider === 'gemini') {
+        return await this.generateWithGemini(prompt);
       } else {
         throw new Error(`Unsupported AI provider: ${provider}`);
       }
@@ -199,6 +207,43 @@ export class AIService {
     }
 
     return '';
+  }
+
+  /**
+   * Review code using Google Gemini
+   */
+  private async reviewWithGemini(prompt: string): Promise<string> {
+    if (!this.geminiClient) {
+      throw new Error('Gemini client not initialized');
+    }
+
+    const model = this.geminiClient.getGenerativeModel({
+      model: this.config.getGeminiModel()
+    });
+
+    const fullPrompt = `${this.getSystemPrompt()}\n\n${prompt}`;
+    const result = await model.generateContent(fullPrompt);
+    const response = await result.response;
+
+    return response.text() || '{}';
+  }
+
+  /**
+   * Generate PR description using Google Gemini
+   */
+  private async generateWithGemini(prompt: string): Promise<string> {
+    if (!this.geminiClient) {
+      throw new Error('Gemini client not initialized');
+    }
+
+    const model = this.geminiClient.getGenerativeModel({
+      model: this.config.getGeminiModel()
+    });
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+
+    return response.text() || '';
   }
 
   /**

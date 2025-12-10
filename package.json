@@ -70,7 +70,8 @@
           "enum": [
             "openai",
             "anthropic",
-            "azure-openai"
+            "azure-openai",
+            "gemini"
           ],
           "description": "AI provider to use for code review"
         },
@@ -109,6 +110,11 @@
           "default": "claude-3-opus-20240229",
           "description": "Anthropic model to use (e.g., claude-3-opus-20240229, claude-3-sonnet-20240229)"
         },
+        "prReview.geminiModel": {
+          "type": "string",
+          "default": "gemini-1.5-pro",
+          "description": "Google Gemini model to use (e.g., gemini-1.5-pro, gemini-1.5-flash)"
+        },
         "prReview.maxTokens": {
           "type": "number",
           "default": 4000,
@@ -143,6 +149,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
+    "@google/generative-ai": "^0.24.1",
     "axios": "^1.6.2",
     "openai": "^4.20.1",
     "simple-git": "^3.21.0"
