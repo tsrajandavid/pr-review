@@ -174,4 +174,31 @@ export class GitService {
       errors
     };
   }
+
+  /**
+   * Get diff of staged changes (for pre-commit validation)
+   */
+  async getStagedDiff(): Promise<string> {
+    try {
+      const diff = await this.git.diff(['--cached']);
+      return diff;
+    } catch (error) {
+      throw new Error(`Failed to get staged diff: ${error}`);
+    }
+  }
+
+  /**
+   * Get list of staged files
+   */
+  async getStagedFiles(): Promise<ChangedFile[]> {
+    try {
+      const status = await this.git.status();
+      return status.staged.map(file => ({
+        path: file,
+        status: 'M' // Staged files are considered modified
+      }));
+    } catch (error) {
+      throw new Error(`Failed to get staged files: ${error}`);
+    }
+  }
 }

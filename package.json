@@ -51,6 +51,21 @@
         "command": "pr-review.clearDiagnostics",
         "title": "Clear Review Annotations",
         "category": "PR Review"
+      },
+      {
+        "command": "pr-review.installPreCommitHook",
+        "title": "Install Pre-Commit AI Review Hook",
+        "category": "PR Review"
+      },
+      {
+        "command": "pr-review.uninstallPreCommitHook",
+        "title": "Uninstall Pre-Commit Hook",
+        "category": "PR Review"
+      },
+      {
+        "command": "pr-review.runPreCommitValidation",
+        "title": "Run Pre-Commit Validation",
+        "category": "PR Review"
       }
     ],
     "keybindings": [
@@ -94,6 +109,11 @@
           "type": "boolean",
           "default": true,
           "description": "Show inline code annotations for review feedback"
+        },
+        "prReview.blockCommitOnIssues": {
+          "type": "boolean",
+          "default": true,
+          "description": "Block commits when blocking issues are found (pre-commit hook)"
         },
         "prReview.autoRunChecklist": {
           "type": "boolean",

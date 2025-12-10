@@ -8,6 +8,7 @@ import { PRChecklist } from './checklist/prChecklist';
 import { PRSizeChecker } from './utils/prSizeChecker';
 import { buildReviewPrompt } from './prompts/reviewPrompt';
 import { ReviewResultsPanel } from './views/reviewResultsPanel';
+import { PreCommitHookManager } from './git/preCommitHook';
 
 /**
  * Extension activation
@@ -221,6 +222,82 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	);
 
+	// Initialize Pre-Commit Hook Manager
+	let preCommitHookManager: PreCommitHookManager | undefined;
+
+	function getPreCommitHookManager(): PreCommitHookManager {
+		if (!preCommitHookManager) {
+			const ai = initializeAIService();
+			preCommitHookManager = new PreCommitHookManager(config, gitService, ai);
+		}
+		return preCommitHookManager;
+	}
+
+	/**
+	 * Command: Install Pre-Commit Hook
+	 */
+	const installPreCommitHookCommand = vscode.commands.registerCommand(
+		'pr-review.installPreCommitHook',
+		async () => {
+			try {
+				const manager = getPreCommitHookManager();
+				await manager.installHook();
+			} catch (error) {
+				vscode.window.showErrorMessage(
+					`Failed to install pre-commit hook: ${error instanceof Error ? error.message : String(error)}`
+				);
+			}
+		}
+	);
+
+	/**
+	 * Command: Uninstall Pre-Commit Hook
+	 */
+	const uninstallPreCommitHookCommand = vscode.commands.registerCommand(
+		'pr-review.uninstallPreCommitHook',
+		async () => {
+			try {
+				const manager = getPreCommitHookManager();
+				await manager.uninstallHook();
+			} catch (error) {
+				vscode.window.showErrorMessage(
+					`Failed to uninstall pre-commit hook: ${error instanceof Error ? error.message : String(error)}`
+				);
+			}
+		}
+	);
+
+	/**
+	 * Command: Run Pre-Commit Validation
+	 */
+	const runPreCommitValidationCommand = vscode.commands.registerCommand(
+		'pr-review.runPreCommitValidation',
+		async () => {
+			try {
+				const manager = getPreCommitHookManager();
+
+				await vscode.window.withProgress({
+					location: vscode.ProgressLocation.Notification,
+					title: 'Running Pre-Commit Validation',
+					cancellable: false
+				}, async (progress) => {
+					progress.report({ message: 'Analyzing staged changes...' });
+					const result = await manager.runPreCommitValidation();
+
+					if (result.blockingIssues > 0) {
+						vscode.window.showWarningMessage(result.message);
+					} else {
+						vscode.window.showInformationMessage(result.message);
+					}
+				});
+			} catch (error) {
+				vscode.window.showErrorMessage(
+					`Pre-commit validation failed: ${error instanceof Error ? error.message : String(error)}`
+				);
+			}
+		}
+	);
+
 	// Register all commands
 	context.subscriptions.push(
 		runReviewCommand,
@@ -228,6 +305,9 @@ export function activate(context: vscode.ExtensionContext) {
 		showChecklistCommand,
 		clearDiagnosticsCommand,
 		applyFixCommand,
+		installPreCommitHookCommand,
+		uninstallPreCommitHookCommand,
+		runPreCommitValidationCommand,
 		codeDecorations
 	);
 
