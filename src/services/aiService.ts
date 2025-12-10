@@ -221,11 +221,23 @@ export class AIService {
       model: `models/${this.config.getGeminiModel()}`
     });
 
-    const fullPrompt = `${this.getSystemPrompt()}\n\n${prompt}`;
+    const systemPrompt = this.getSystemPrompt();
+    const fullPrompt = `${systemPrompt}
+
+IMPORTANT: You MUST respond with ONLY valid JSON. Do not include any explanatory text, markdown formatting, or code blocks. Return ONLY the raw JSON object.
+
+${prompt}
+
+Remember: Return ONLY the JSON object, nothing else.`;
+
     const result = await model.generateContent(fullPrompt);
     const response = await result.response;
+    let text = response.text() || '{}';
 
-    return response.text() || '{}';
+    // Clean up response - remove markdown code blocks if present
+    text = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+    return text;
   }
 
   /**
