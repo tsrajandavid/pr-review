@@ -218,7 +218,7 @@ export class AIService {
     }
 
     const model = this.geminiClient.getGenerativeModel({
-      model: this.config.getGeminiModel()
+      model: `models/${this.config.getGeminiModel()}`
     });
 
     const fullPrompt = `${this.getSystemPrompt()}\n\n${prompt}`;
@@ -237,7 +237,7 @@ export class AIService {
     }
 
     const model = this.geminiClient.getGenerativeModel({
-      model: this.config.getGeminiModel()
+      model: `models/${this.config.getGeminiModel()}`
     });
 
     const result = await model.generateContent(prompt);
