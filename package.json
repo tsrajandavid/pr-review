@@ -1,0 +1,150 @@
+{
+  "name": "pr-review-assistant",
+  "displayName": "PR Auto Review Assistant",
+  "description": "Automate PR review workflow using AI - analyze changes, provide inline feedback, and generate PR descriptions",
+  "version": "0.1.0",
+  "publisher": "your-publisher-name",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "SCM Providers"
+  ],
+  "keywords": [
+    "git",
+    "pr",
+    "review",
+    "ai",
+    "code-review"
+  ],
+  "activationEvents": [
+    "onCommand:pr-review.runReview",
+    "onCommand:pr-review.generateDescription",
+    "onCommand:pr-review.showChecklist",
+    "workspaceContains:.git"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "pr-review.runReview",
+        "title": "Run AI Review on Current Branch",
+        "category": "PR Review"
+      },
+      {
+        "command": "pr-review.generateDescription",
+        "title": "Generate PR Description",
+        "category": "PR Review"
+      },
+      {
+        "command": "pr-review.showChecklist",
+        "title": "Show Pre-PR Checklist",
+        "category": "PR Review"
+      },
+      {
+        "command": "pr-review.applyFix",
+        "title": "Apply Suggested Fix",
+        "category": "PR Review"
+      },
+      {
+        "command": "pr-review.clearDiagnostics",
+        "title": "Clear Review Annotations",
+        "category": "PR Review"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "pr-review.runReview",
+        "key": "ctrl+shift+r",
+        "mac": "cmd+shift+r",
+        "when": "editorTextFocus"
+      }
+    ],
+    "configuration": {
+      "title": "PR Review Assistant",
+      "properties": {
+        "prReview.aiProvider": {
+          "type": "string",
+          "default": "openai",
+          "enum": [
+            "openai",
+            "anthropic",
+            "azure-openai"
+          ],
+          "description": "AI provider to use for code review"
+        },
+        "prReview.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "API key for the AI provider (or use environment variable)"
+        },
+        "prReview.baseBranch": {
+          "type": "string",
+          "default": "development",
+          "description": "Base branch to compare against (e.g., main, master, development)"
+        },
+        "prReview.maxFiles": {
+          "type": "number",
+          "default": 10,
+          "description": "Maximum number of files before showing PR size warning"
+        },
+        "prReview.enableInlineAnnotations": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show inline code annotations for review feedback"
+        },
+        "prReview.autoRunChecklist": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically run pre-PR checklist after review"
+        },
+        "prReview.openaiModel": {
+          "type": "string",
+          "default": "gpt-4-turbo-preview",
+          "description": "OpenAI model to use (e.g., gpt-4, gpt-4-turbo-preview)"
+        },
+        "prReview.anthropicModel": {
+          "type": "string",
+          "default": "claude-3-opus-20240229",
+          "description": "Anthropic model to use (e.g., claude-3-opus-20240229, claude-3-sonnet-20240229)"
+        },
+        "prReview.maxTokens": {
+          "type": "number",
+          "default": 4000,
+          "description": "Maximum tokens for AI response"
+        },
+        "prReview.customPrompt": {
+          "type": "string",
+          "default": "",
+          "description": "Custom review prompt (leave empty to use default)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "@vscode/test-electron": "^2.3.8",
+    "@vscode/vsce": "^2.22.0",
+    "eslint": "^8.54.0",
+    "typescript": "^5.3.2"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.71.2",
+    "axios": "^1.6.2",
+    "openai": "^4.20.1",
+    "simple-git": "^3.21.0"
+  }
+}
